@@ -7,6 +7,7 @@ const screen = document.querySelector(".screen");
 let info = [];
 let filteredPhotos = []
 let loading = false
+let cameraName = "ALL"
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
@@ -28,7 +29,7 @@ const getData = async () => {
     } finally {
         setLoading(false)
         getPhotos()
-        h3Visibility()
+        setCameraName(cameraName)
     }
 };
 
@@ -91,26 +92,19 @@ const getPhotos = () => {
 }
 
 //! Photos h3'ünün isim değişikliği fonksiyonu
-const h3Visibility = () => {
-    let camera = buttonsDiv.querySelector(".active")?.innerText || "ALL";
+const setCameraName = (item) => {
+    cameraName = item
 
-    if (camera === "ALL") {
+    if (cameraName === "ALL") {
         h3Photos.textContent = "ALL PHOTOS";
     } else {
-        h3Photos.textContent = `${camera} PHOTOS`;
+        h3Photos.textContent = `${cameraName} PHOTOS`;
     }
-};
+}
 
 //# Butonlara işlev verilen fonksiyon
 buttonsDiv.addEventListener("click", (e) => {
     const camera = e.target.innerText;
-
-    // Butonların aktif durumunu işaretlemek için
-    const buttons = buttonsDiv.querySelectorAll("button");
-    buttons.forEach(btn => {
-        btn.classList.remove("active");
-    });
-    e.target.classList.add("active");
 
     if (camera === "ALL") {
         filteredPhotos = info;
@@ -119,5 +113,5 @@ buttonsDiv.addEventListener("click", (e) => {
     }
 
     getPhotos();
-    h3Visibility();
+    setCameraName(camera)
 });
