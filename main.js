@@ -16,6 +16,7 @@ const getData = async () => {
         }
         const data = await res.json();
         info = data.photos;
+        filteredPhotos = info
         getPhotos()
         h3Visibility()
     } catch (error) {
