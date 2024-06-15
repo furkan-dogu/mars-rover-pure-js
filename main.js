@@ -3,6 +3,7 @@ const h3Photos = document.querySelector(".photos");
 const cards = document.querySelector(".cards");
 
 let info = [];
+let filteredPhotos = []
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
@@ -16,6 +17,7 @@ const getData = async () => {
         const data = await res.json();
         info = data.photos;
         getPhotos()
+        h3Visibility()
     } catch (error) {
         console.log(error);
     }
@@ -36,7 +38,9 @@ const buttons = () => {
 buttons()
 
 const getPhotos = () => {
-    info.forEach((item) => {
+    cards.innerHTML = ""
+
+    filteredPhotos.forEach((item) => {
         // Card div
         const cardDiv = document.createElement("div")
         cardDiv.classList.add("card")
@@ -61,3 +65,25 @@ const getPhotos = () => {
         cards.appendChild(cardDiv)
     })
 }
+
+const h3Visibility = () => {
+    if (filteredPhotos.length) {
+        h3Photos.textContent = `Photos (${filteredPhotos.length} Pieces)`
+        h3Photos.style.display = 'block';
+    } else {
+        h3Photos.style.display = 'none'
+    }
+}
+
+buttonsDiv.addEventListener("click", (e) => {   
+        const camera = e.target.innerText;
+
+        if (camera === "ALL") {
+            filteredPhotos = info;
+        } else {
+            filteredPhotos = info.filter(item => item.camera.name === camera);
+        }
+
+        getPhotos(); 
+        h3Visibility(); 
+});
