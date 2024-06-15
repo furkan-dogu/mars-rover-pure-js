@@ -9,6 +9,8 @@ body {
     background-image: url("./assets/space.jpg");
     background-attachment: fixed;
     color: white;
+    height: 100vh;
+    position: relative;
 }
 
 .screen {
@@ -82,4 +84,13 @@ body {
             }
         }
     }
+}
+
+.loading {
+    display: none;
+    width: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

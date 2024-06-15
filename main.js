@@ -1,13 +1,19 @@
 const buttonsDiv = document.querySelector(".buttons");
 const h3Photos = document.querySelector(".photos");
 const cards = document.querySelector(".cards");
+const loadingGif = document.querySelector(".loading");
+const screen = document.querySelector(".screen");
 
 let info = [];
 let filteredPhotos = []
+let loading = false
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
+//+ Veri çekme işlemi
 const getData = async () => {
+    setLoading(true)
+
     const URL = `https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=${API_KEY}`;
     try {
         const res = await fetch(URL);
@@ -17,15 +23,31 @@ const getData = async () => {
         const data = await res.json();
         info = data.photos;
         filteredPhotos = info
-        getPhotos()
-        h3Visibility()
     } catch (error) {
         console.log(error);
+    } finally {
+        setLoading(false)
+        getPhotos()
+        h3Visibility()
     }
 };
 
+//! Loading gif çalışma durumu fonksiyonu
+const setLoading = (isLoading) => {
+    loading = isLoading;
+
+    if (loading) {
+        loadingGif.style.display = 'block';
+        screen.style.display = 'none';
+    } else {
+        loadingGif.style.display = 'none';
+        screen.style.display = 'block';
+    }
+}
+
 getData()
 
+//# Butonların oluştuğu fonksiyon
 const buttons = () => {
     const cameras = ["ALL", "FHAZ", "NAVCAM", "MAST", "CHEMCAM", "RHAZ"]
 
@@ -38,6 +60,7 @@ const buttons = () => {
 
 buttons()
 
+//+ API'deki fotoğrafların ekrana basılmasını sağlayan fonksiyon
 const getPhotos = () => {
     cards.innerHTML = ""
 
@@ -67,24 +90,34 @@ const getPhotos = () => {
     })
 }
 
+//! Photos h3'ünün isim değişikliği fonksiyonu
 const h3Visibility = () => {
-    if (filteredPhotos.length) {
-        h3Photos.textContent = `Photos (${filteredPhotos.length} Pieces)`
-        h3Photos.style.display = 'block';
+    let camera = buttonsDiv.querySelector(".active")?.innerText || "ALL";
+
+    if (camera === "ALL") {
+        h3Photos.textContent = "ALL PHOTOS";
     } else {
-        h3Photos.style.display = 'none'
+        h3Photos.textContent = `${camera} PHOTOS`;
     }
-}
+};
 
-buttonsDiv.addEventListener("click", (e) => {   
-        const camera = e.target.innerText;
+//# Butonlara işlev verilen fonksiyon
+buttonsDiv.addEventListener("click", (e) => {
+    const camera = e.target.innerText;
 
-        if (camera === "ALL") {
-            filteredPhotos = info;
-        } else {
-            filteredPhotos = info.filter(item => item.camera.name === camera);
-        }
+    // Butonların aktif durumunu işaretlemek için
+    const buttons = buttonsDiv.querySelectorAll("button");
+    buttons.forEach(btn => {
+        btn.classList.remove("active");
+    });
+    e.target.classList.add("active");
 
-        getPhotos(); 
-        h3Visibility(); 
+    if (camera === "ALL") {
+        filteredPhotos = info;
+    } else {
+        filteredPhotos = info.filter(item => item.camera.name === camera);
+    }
+
+    getPhotos();
+    h3Visibility();
 });
